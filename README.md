@@ -23,6 +23,7 @@ I obtained samples from the study proposed and found by Menuka: [research paper]
 I obtain specific samples by searching PRJNA736529 project number (the study project number) on the NIH website: [datasets](https://www.ncbi.nlm.nih.gov/biosample?LinkName=bioproject_biosample_all&from_uid=736529)
 I chose samples #1 (run SRR14784363) and #14 (run SRR14784377). 
 
+
 3. Run descriptions
 
 * Run SRR14784363
@@ -35,9 +36,12 @@ I downloaded both runs as fastq files from the website pages provided above.
 
 I chose 2 runs instead of 1 to prove that the code I am going to develop is resproducible, as reproducibility is one of the core principles of any data analysis. 
 
+
+
 **Part B**
 
 This part focuses on describing specific steps I plan to take to analyze the runs. Note that this proposal is more practical than theoretical and will include some actual commands that I ran and some steps that I've already completed. So, you will see outputs. It may also include some steps I'm still in the process of figuring out. I included my practical work to gain feedback on the logic of the workflow and commands (if possible). I decided to leave some outputs because I wanted to see what's in the file to determine what exactly my analysis will focus on. It will also help to determine specific goals I want to achieve in my final submission. I never worked with files like this on my own, so the more I practically learn about it, the easier it will be for me to figure out what to do.
+
 
 4. Creating a working directory and structurizing the project
 
@@ -68,7 +72,7 @@ git add .gitignore
 git commit -m "Adding a Gitignore file"
 ```
 
-5. Basic analysis of the runs
+5. General analysis of the runs
 
 First, I want to gather some general information about these files. I ran the following commands: 
 
@@ -135,57 +139,211 @@ tail -n +2 metadata.tsv | cut -f 3 | sort | uniq -c
 But not sure how to do this for fastq files. Maybe I will use AI to help me with this. 
 
 
-6. 
+6. Printing specific lines from the files
 
+I want to look at some specific examples of reads that my fastq files contain. I remember from GA3 that in order for this to happen, we need a script. I will start with making the script first:
 
+```#!/bin/bash
+set -euo pipefail
 
+file="$1"
 
-zcat data/SRR14784363.fastq | head -n 40
+echo "Last line of $file:"
+tail -n 1 "$file" | head -n 1
 
-fastqc data/SRR14784356.fastq.gz -o results/qualitydistribution.txt
-# or (if installed)
-seqtk fqchk data/SRR14784356.fastq.gz > results/seqtk_fqchk.txt
+echo "Second line of $file:"
+tail -n +2 "$file" | head -n 1
+```
 
-module spider fastqc
-module spider seqtk
+I will create an .sh file under scripts/
 
-To load the module, type:
-   module load fastqc/0.12.1
+```bash
+touch scripts/lines.sh
+```
 
-   mkdir -p results/qltdist.txt
-fastq data/SRR14784363.fastq -o results/qlt.txt
-fastqc data/SRR14784363.fastq -o results/
+I put the script into the .sh file.
+Then, I am going to run it for my 2 fastq files 
 
+```bash
+bash scripts/lines.sh data/SRR14784363.fastq > results/printed_lines_run1.txt
+bash scripts/lines.sh data/SRR14784377.fastq > results/printed_lines_run2.txt
+```
 
+The outputs are reads, but you can see they are quite weird. I hit the lines that belong to 2 separate reads, most likely. So, I will just use "head" here to see some more:
+
+```bash
 head -n 40 data/SRR14784363.fastq
+head -n 40 data/SRR14784377.fastq
+```
+I am not sure I know exactly what these question marks mean. I will involve Github Copilot (agent) here to get some answers.
 
-grep -v "^@" data/SRR14784363.fastq | wc -l
-grep -v "^@" data/SRR14784377.fastq | wc -l
+My prompt: "#Explain simply and briefly what ???? mean under sequences reads"
 
- cat data/SRR14784363.fastq | grep -v "^@" | cut -f3 | sort | uniq -c | sort -n
+The answer: "Those question marks are the per‑base quality scores for each base in the read. In modern FASTQ (Phred+33) the character '?' (ASCII 63) encodes a Phred score of 30, which means the base call is high quality (≈0.1% error probability)."
 
-  cat data/SRR14784363.fastq | wc -l
+**Note**: Please let me know if adding screenshots of the promt and the answer is required. 
 
-   echo $(( $(wc -l < data/SRR14784363.fastq) / 4 ))
+Okay, now we know that these reads are high quality, so it's good news for me.
 
-Let's check at least 1 overlapping sequence 
-cat data/SRR14784363.fastq | grep -c "GCA"
-cat data/SRR14784363.fastq | grep -c "TTTCGCA"
-cat data/SRR14784363.fastq | grep -c "TCCTGTTTGCTACCCACGCTTTCGCA"
-cat data/SRR14784363.fastq | grep -c "GTCTGGGACTACACGGGTATCTAATCCTGTTTGCTACCCACGCTTTCGCA"
+**Note**: I might want to explore if I can tell which reads belong to Archaea and which to Bacteria. But something tells me that it is probably not very possible, because I would likely need to involve other datasets to compare reads and figure out adapters used. I've seen from some sources that "kraken2" is a command that can help do this but it's incorporation into this project is questionable because I simply don't understand it well. I might spend time learning more about it if Jelmer or Menuka can help me determine whether this will be useful at all. 
 
-  cat data/SRR14784363.fastq  | grep "^@" | cut -d= -f2 | sort | uniq -c | sort -n
+I then updated my GitHub repo:
 
-  cat data/SRR14784363.fastq | grep "length=250" -A 1 | head -n 10
+```bash
+git add scripts/*.sh README.md
+git commit -m "Part B"
+```
 
+**Part C**
+
+This part of the project will focus specififcally on understanding reads. I will involve slurm batch jobs and trimgalore. 
+
+7. Creating a TrimGalore script for slurm batch jobs
+
+As part of GA4, we looked at the html files produced after running a specific script. This is the ultimate goal of this step. 
+
+I made a project_trimgalore.sh file first:
+
+```bash
+touch scripts/project_trimgalore.sh
+```
+
+I then wrote a script based on the example script from GA4, which looked like this:
+
+```bash
+#!/bin/bash
+#SBATCH --account=PAS2880
+#SBATCH --cpus-per-task=8
+#SBATCH --time=00:30:00
+#SBATCH --output=slurm-fastqc-%j.out
+#SBATCH --mail-type=FAIL
+#SBATCH --error=slurm-fastqc-%j.err
+
+set -euo pipefail
+
+# Constants
+TRIMGALORE_CONTAINER=oras://community.wave.seqera.io/library/trim-galore:0.6.10--bc38c9238980c80e
+
+# Copy the placeholder variables
+R1="$1"
+R2="$2"
+outdir="$3"
+
+# Report
+echo "# Starting script trimgalore.sh"
+date
+echo "# Input R1 FASTQ file:      $R1"
+echo "# Input R2 FASTQ file:      $R2"
+echo "# Output dir:               $outdir"
+echo "# Cores to use: $SLURM_CPUS_PER_TASK"
+echo
+
+# Create the output dir
+mkdir -p "$outdir"
+
+# Run TrimGalore
+apptainer exec "$TRIMGALORE_CONTAINER" \
+    trim_galore \
+    --paired \
+    --fastqc \
+    --nextseq 20 \
+    --cores "$SLURM_CPUS_PER_TASK" \
+    --output_dir "$outdir" \
+    "$R1" \
+    "$R2"
+
+
+# Report
+echo
+echo "# TrimGalore version:"
+apptainer exec "$TRIMGALORE_CONTAINER" \
+  trim_galore -v
+echo "# Successfully finished script trimgalore.sh"
+date
+```
+
+This script needs to be changed. First, I don't think my fastq files are pair-end reads. Second, we don't need the "nextseq" option for now (and maybe not ever). I modified the code this way:
+
+```bash
+#!/bin/bash
+#SBATCH --account=PAS2880
+#SBATCH --cpus-per-task=8
+#SBATCH --time=00:30:00
+#SBATCH --output=slurm-fastqc-%j.out
+#SBATCH --mail-type=FAIL
+#SBATCH --error=slurm-fastqc-%j.err
+
+set -euo pipefail
+
+# Constants
+TRIMGALORE_CONTAINER=oras://community.wave.seqera.io/library/trim-galore:0.6.10--bc38c9238980c80e
+
+# Copy the placeholder variables
+R1="$1"
+R2="$2"
+outdir="$3"
+
+# Report
+echo "# Starting script trimgalore.sh"
+date
+echo "# Input R1 FASTQ file:      $R1"
+echo "# Input R2 FASTQ file:      $R2"
+echo "# Output dir:               $outdir"
+echo "# Cores to use: $SLURM_CPUS_PER_TASK"
+echo
+
+# Create the output dir
+mkdir -p "$outdir"
+
+# Run TrimGalore
+apptainer exec "$TRIMGALORE_CONTAINER" \
+    trim_galore \
+    --fastqc \
+    --cores "$SLURM_CPUS_PER_TASK" \
+    --output_dir "$outdir" \
+    "$R1" \
+    "$R2"
+
+
+# Report
+echo
+echo "# TrimGalore version:"
+apptainer exec "$TRIMGALORE_CONTAINER" \
+  trim_galore -v
+echo "# Successfully finished script trimgalore.sh"
+date
+```
+
+8. Submitting batch jobs to test the script
+
+I used the following commands:
+
+```bash
 R1=data/SRR14784363.fastq
 R2=data/SRR14784377.fastq
 
-sbatch scripts/project_trimgalore.sh "$R1" "$R2" results/fastqc
+For check: ls -lh "$R1" "$R2"
 
-for f in data/*.fastq; do
-  cat "$f" | awk -v fn="$f" '
-    NR%4==2 { seq=toupper($0); total++; if (seq ~ /A{10,}$/) poly++ }
-    END { printf "%s\t%d\t%d\t%.2f%%\n", fn, total, poly, (total?100*poly/total:0) }
-  '
-done
+sbatch scripts/project_trimgalore.sh "$R1" "$R2" results/batchjobs
+
+squeue -u $USER -l
+```
+
+The outputs were:
+
+```bash
+Submitted batch job 42003114
+
+JOBID PARTITION     NAME     USER    STATE       TIME TIME_LIMI  NODES NODELIST(REASON)
+          42003114       cpu project_ kolganov  RUNNING       0:06     30:00      1 p0007
+          42001094       cpu ondemand kolganov  RUNNING    2:44:35   3:00:00      1 p0219
+```
+
+**Note**: I will include other monitoring commands and commands that also check whether the batch job was successful into the actual project submission.
+
+For now, we can look at the .out file and see that at the end it says the script was successfully finished. 
+
+I then downloaded the html files to assess reads. I can see that it has a lot of overlapping reads and they are likely not poly-G. We can also see that they used Illumina for sequencing. 
+
+
+

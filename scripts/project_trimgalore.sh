@@ -32,12 +32,10 @@ mkdir -p "$outdir"
 apptainer exec "$TRIMGALORE_CONTAINER" \
     trim_galore \
     --fastqc \
-    --nextseq 20 \
     --cores "$SLURM_CPUS_PER_TASK" \
     --output_dir "$outdir" \
     "$R1" \
     "$R2"
-    
 
 
 # Report
