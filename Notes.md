@@ -192,7 +192,7 @@ I want to look at some specific examples of reads that my fastq files contain. I
 touch scripts/lines.sh
 ```
 
-The write a script that will show first and last reads (each read = 4 lines):
+Then I wrote a script that will show first and last reads (each read = 4 lines):
 
 ```bash
 #!/bin/bash

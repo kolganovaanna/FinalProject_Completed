@@ -56,5 +56,111 @@ File "Main_Protocol.md" is the central document of the project, describing steps
 'Data' directory withing FinalProject contains analyzed data files with reverse and forward reads. This directory is split into 2 subdierectories corresponding to the name of the samples I'm working with. 
 'Results' directory is split into the same 2 subdirectories and contains output files for commands used in the protocol. 'Scripts' directory contains code scripts used throughout the project. 
 
+A Git repositoryb was initialized after all of the initial dirs are made:
+
+```bash
+git init
+git add Main_Protocol.md Notes.md
+git commit -m "Committing to main_protocol and notes to set up"
+echo "results/" > .gitignore
+echo "data/" >> .gitignore
+git add .gitignore
+git commit -m "Adding a Gitignore file"
+```
+
+**Note**: files that should be ignored in this working directory are ProgressReport and ProjectProposal. 
+
+5. General analysis of the reads
+
+the purpose of the step is to gather some general data on my files. These data include  file size, total number of lines, and the number of gemonic features. In the main protocol, I will show commands I used only for SRR14784363.lite.1_1.fastq sample to practically illustrate how I gathered these general information for all of my runs. 
+
+To obtain sample size I used this command:
+
+```bash
+ls -lh data/SRR14784363/SRR14784363.lite.1_1.fastq
+```
+
+To count the number of lines, I used this command:
+
+```bash
+wc -l data/SRR14784363/SRR14784363.lite.1_1.fastq 
+```
+
+To count the number of genomic features, I used this command:
+
+```bash
+grep -v "^@" data/SRR14784363/SRR14784363.lite.1_1.fastq | wc -l
+```
+
+I created .txt files with obtained general information for each of my samples under 'results/'. Below are the commands I used specifically for SRR14784363.lite.1_1.fastq:
+
+```bash
+echo "File size:" >> results/SRR14784363/r1_general_info.txt
+ls -lh  data/SRR14784363/SRR14784363.lite.1_1.fastq  >> results/SRR14784363/r1_general_info.txt
+echo "Total lines:" >> results/SRR14784363/r1_general_info.txt
+wc -l data/SRR14784363/SRR14784363.lite.1_1.fastq  >> results/SRR14784363/r1_general_info.txt
+echo "Reads(no headers):" >> results/SRR14784363/r1_general_info.txt
+grep -v "^@"  data/SRR14784363/SRR14784363.lite.1_1.fastq | wc -l  >> results/SRR14784363/r1_general_info.txt
+```
+According to the results, we can say that these samples are pretty similar in size and number of reads. 
+
+6. Taking a closer look at the samples
+
+In order to get a better understanding of the contents of my files, I want to print specific lines from them and store these output lines as separate files under 'results/'. In order for this to happen, I first created the script and saved it under 'scripts/lines.sh'. This script shows first and last reads (each read = 4 lines). 
+
+Now, we will look how the script was run for my files:
+
+```bash
+bash scripts/lines.sh  data/SRR14784363/SRR14784363.lite.1_1.fastq  > results/SRR14784363/printed_lines_f1.txt
+bash scripts/lines.sh  data/SRR14784363/SRR14784363.lite.1_2.fastq  > results/SRR14784363/printed_lines_r1.txt
+bash scripts/lines.sh  data/SRR14784377/SRR14784377.lite.1_1.fastq  > results/SRR14784377/printed_lines_f2.txt
+bash scripts/lines.sh  data/SRR14784377/SRR14784377.lite.1_2.fastq  > results/SRR14784377/printed_lines_r2.txt
+```
+Produced outputs were stored in separate .txt files under 'results/'. Let's look at the output for SRR14784377.lite.1_1.fastq:
+
+```bash
+First read in data/SRR14784377/SRR14784377.lite.1_1.fastq:
+@SRR14784377.lite.1.1 1 length=250
+AGGATCCTACGGGACGCAGCAGTGAGGAATATTGGTCAATGGACGCAAGTCTGAACCAGCCAAGTAGCGTGAAGGACGACGGCCCTACGGGTTGTAAACTTCTTTTGTACGGGAATAAAGTGAGGCACGCACTGCCTTTTTGCATGTACCGTACGAATAAGCAACGGCTAATTCCGTGCCAGCGGCCGCGGTAATACGGACGATGCGAGCGTTATCCGGAGTTATTGGGTTTAAAGGGAGCGTAGGCGGG
++SRR14784377.lite.1.1 1 length=250
+??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+
+Last read in data/SRR14784377/SRR14784377.lite.1_1.fastq:
+@SRR14784377.lite.1.71987 71987 length=250
+AGGATCCTATGGGACGCACCAGTGGGGAATATTGCACAATGGGCGCAAGCCTGATGCAGCAACGCCGCGTGAGCGATGAAGGTCTTCGGATTGTAAAGCTCTGTCCTTGAGGACGAAAACTGACGGTACTCTTGGAGGAAGCCCCGGCTAACTACGTGCCAGCAGCCGCGGTAATACGTAGGGGGCGAGCGTTATCCGGAATTATTGGGCGTAAAGAGTACGTAGGTGGTTTTGTAAGCGTAGGGTTAAA
++SRR14784377.lite.1.71987 71987 length=250
+??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+```
+The question marks below each read tell us that the quality of sequencing is good. Questions marks indicate no additional comments of the reads, which means there were no problems detected with quality. 
+
+GitHub repo update:
+
+```bash
+git add scripts/*.sh Main_Protocol.md Notes.md
+git commit -m "Part B"
+```
+
+**Part C**
+
+Because the samples I'm working with are metabarcoding, each read contains primer sequences. These sequences are identical across reads. Thus, in order to avoid any innacuracies that the presence of the primer sequences can intrduce to the analysis, we will remove the primers first. For this purpose I used cutadapt.
+
+First, primer sequences need to be identified and stored as variables:
+
+```bash
+primer_f=CCTAYGGGRBGCASCAG
+primer_r=GGACTACNNGGGTATCTAAT
+```
+
+We know that DNA is double-stranded. One strand is the forward sequence. The other is the reverse complement. Therefore, next, we need to get the reverse complement of our primer sequences:
+
+```bash
+primer_f_rc=$(echo "$primer_f" | tr ATCGYRKMBDHV TAGCRYMKVHDB | rev)
+primer_r_rc=$(echo "$primer_r" | tr ATCGYRKMBDHV TAGCRYMKVHDB | rev)
+
+# Checking the sequences
+echo "$primer_f_rc"
+echo "$primer_r_rc"
+```
+
 
 

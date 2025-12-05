@@ -3,8 +3,9 @@ set -euo pipefail
 
 file="$1"
 
-echo "Last line of $file:"
-tail -n 1 "$file" | head -n 1
+echo "First read in $file:"
+head -n 4 "$file"
 
-echo "Second line of $file:"
-tail -n +2 "$file" | head -n 1
+echo ""
+echo "Last read in $file:"
+tail -n 4 "$file"
