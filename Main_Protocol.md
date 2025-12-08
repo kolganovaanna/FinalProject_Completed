@@ -1,6 +1,6 @@
 ## General information
 
-- Title: 
+- Title: Characterization of Rumen Microbiome via 16S Metabarcoding
 - Author: Anna kolganova
 - Date: 2025-11-30
 - Environment: Pitzer cluster at OSC via VS Code
@@ -11,6 +11,8 @@
 This is a final project progress report focusing on analyzing 16S sequencing data obtained by processing rumen fluid samples. 
 
 ## Goal and objectives
+cp SRR14784363_1.fastq.gz data/SRR14784363/
+cp SRR14784363_2.fastq.gz data/SRR14784363/
 
 
 ## Protocol
@@ -142,6 +144,8 @@ git commit -m "Part B"
 
 **Part C**
 
+7. Using Cutadapt to exclude primer sequences
+
 Because the samples I'm working with are metabarcoding, each read contains primer sequences. These sequences are identical across reads. Thus, in order to avoid any innacuracies that the presence of the primer sequences can intrduce to the analysis, we will remove the primers first. For this purpose I used cutadapt.
 
 First, primer sequences need to be identified and stored as variables:
@@ -162,5 +166,56 @@ echo "$primer_f_rc"
 echo "$primer_r_rc"
 ```
 
+The outputs were:
+
+```bash
+CTGSTGCVYCCCRTAGG
+ATTAGATACCCNNGTAGTCC
+```
+
+Next, we I wrote scripts for our files under 'scripts/cutadapt1.sh' (for SRR14784363) and 'scripts/cutadapt2.sh' (For SRR14784377). Let's see how the script worked for the samples:
+
+```bash
+sbatch scripts/cutadapt1.sh
+sbatch scripts/cutadapt2.sh
+
+squeue -u kolganovaanna -l
+```
+
+The outputs were:
+
+```bash
+Submitted batch job 42366528
+Sat Dec 06 12:02:32 2025
+JOBID PARTITION     NAME     USER    STATE       TIME TIME_LIMI  NODES NODELIST(REASON)
+42366058       cpu ondemand kolganov  RUNNING    1:23:17   3:00:00      1 p0222
+
+Submitted batch job 42366529
+```
+**Note**: the commands run really fast so I couldn't catch they jobs running.However, my .err files had no content and .out files indicated that the scripts were run successfully. I also had no FAIL emails.
+
+The output files include a summary of how the script processed the reads. Almost all of the reads contained the adapters. Nearly all reads were trimmed and passed through Cutadapt. Let's do one final check of the outputs using these commands:
+
+Checking the output: 
+
+```bash
+grep "with adapter:" slurm-cutadapt63.out
+grep "with adapter:" slurm-cutadapt77.out
+```
+
+```bash
+  Read 1 with adapter:                  74,032 (99.7%)
+  Read 2 with adapter:                  72,436 (97.6%)
+
+  Read 1 with adapter:                  71,904 (99.9%)
+  Read 2 with adapter:                  71,840 (99.8%)
+```
+
+We see that the percentages of reads that contained adapters is in the upper 90s, which can tell us that there's likely nothing wrong with the adapter sequences I provided or with Cutadapt syntax. 
+
+8. DADA2 Pipline Construction 
+cp -rv FinalProject/results/SRR14784363/cutadapt /fs/ess/PAS2880/users/$USER/
+
+cp -rv results/SRR14784363/cutadapt /fs/ess/PAS2880/users/$USER/
 
 

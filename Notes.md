@@ -27,7 +27,13 @@ I obtained samples from the study proposed and found by Menuka: [research paper]
 
 I obtain specific samples by searching PRJNA736529 project number (the study project number) on the NIH website: [datasets](https://www.ncbi.nlm.nih.gov/biosample?LinkName=bioproject_biosample_all&from_uid=736529)
 I chose samples #1 (run SRR14784363) and #14 (run SRR14784377). 
+#!/usr/bin/env bash
+wget -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR147/063/SRR14784363/SRR14784363_1.fastq.gz -o SRR14784363_AMPLICON_of_rumen_cattle_1.fastq.gz
+curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR147/063/SRR14784363/SRR14784363_2.fastq.gz -o SRR14784363_AMPLICON_of_rumen_cattle_2.fastq.gz
 
+#!/usr/bin/env bash
+curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR147/077/SRR14784377/SRR14784377_1.fastq.gz -o SRR14784377_AMPLICON_of_rumen_cattle_1.fastq.gz
+curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR147/077/SRR14784377/SRR14784377_2.fastq.gz -o SRR14784377_AMPLICON_of_rumen_cattle_2.fastq.gz
 
 3. Run descriptions
 
@@ -227,18 +233,30 @@ The answer: "Those question marks are the per‑base quality scores for each bas
 
 This tells me that my reads are good quality. 
 
-7. Using Kraken in attempt to separate Bacteria from Archaea
 
-In the proposal, I mentioned that I might want to explore if I can tell which reads belong to Archaea and which to Bacteria. Menuka confirmed that `Kraken` can be used for this purpose. However, I am still not able to figure out how to install it. I tried using 'kraken2' command but it didn't work because I dont kraken installed. I can't figure out how to do it and will need help with this, if I am to include it in my final project.
-
-I then updated my GitHub repo:
-
-```bash
-git add scripts/*.sh progress_report.md
-git commit -m "Part B"
-```
 
 **Part C**
+
+Cutadapt
+
+```bash
+touch scripts/cutadapt1.sh 
+touch scripts/cutadapt2.sh 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 8. Creating a TrimGalore script for slurm batch jobs
 
