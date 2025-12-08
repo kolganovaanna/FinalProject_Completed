@@ -74,35 +74,36 @@ git commit -m "Adding a Gitignore file"
 
 5. General analysis of the reads
 
-the purpose of the step is to gather some general data on my files. These data include  file size, total number of lines, and the number of gemonic features. In the main protocol, I will show commands I used only for SRR14784363.lite.1_1.fastq sample to practically illustrate how I gathered these general information for all of my runs. 
+the purpose of the step is to gather some general data on my files. These data include  file size, total number of lines, and the number of gemonic features. In the main protocol, I will show commands I used only for SRR14784363_1.fastq.gz sample to practically illustrate how I gathered these general information for all of my runs. 
 
 To obtain sample size I used this command:
 
 ```bash
-ls -lh data/SRR14784363/SRR14784363.lite.1_1.fastq
+gunzip data/SRR14784363/SRR14784363_1.fastq.gz
+ls -lh data/SRR14784363/SRR14784363_1.fastq
 ```
 
 To count the number of lines, I used this command:
 
 ```bash
-wc -l data/SRR14784363/SRR14784363.lite.1_1.fastq 
+wc -l data/SRR14784363/SRR14784363_1.fastq 
 ```
 
 To count the number of genomic features, I used this command:
 
 ```bash
-grep -v "^@" data/SRR14784363/SRR14784363.lite.1_1.fastq | wc -l
+grep -v "^@" data/SRR14784363/SRR14784363_1.fastq | wc -l
 ```
 
 I created .txt files with obtained general information for each of my samples under 'results/'. Below are the commands I used specifically for SRR14784363.lite.1_1.fastq:
 
 ```bash
 echo "File size:" >> results/SRR14784363/r1_general_info.txt
-ls -lh  data/SRR14784363/SRR14784363.lite.1_1.fastq  >> results/SRR14784363/r1_general_info.txt
+ls -lh  data/SRR14784363/SRR14784363_1.fastq  >> results/SRR14784363/r1_general_info.txt
 echo "Total lines:" >> results/SRR14784363/r1_general_info.txt
-wc -l data/SRR14784363/SRR14784363.lite.1_1.fastq  >> results/SRR14784363/r1_general_info.txt
+wc -l data/SRR14784363/SRR14784363_1.fastq  >> results/SRR14784363/r1_general_info.txt
 echo "Reads(no headers):" >> results/SRR14784363/r1_general_info.txt
-grep -v "^@"  data/SRR14784363/SRR14784363.lite.1_1.fastq | wc -l  >> results/SRR14784363/r1_general_info.txt
+grep -v "^@"  data/SRR14784363/SRR14784363_1.fastq | wc -l  >> results/SRR14784363/r1_general_info.txt
 ```
 According to the results, we can say that these samples are pretty similar in size and number of reads. 
 
@@ -113,27 +114,27 @@ In order to get a better understanding of the contents of my files, I want to pr
 Now, we will look how the script was run for my files:
 
 ```bash
-bash scripts/lines.sh  data/SRR14784363/SRR14784363.lite.1_1.fastq  > results/SRR14784363/printed_lines_f1.txt
-bash scripts/lines.sh  data/SRR14784363/SRR14784363.lite.1_2.fastq  > results/SRR14784363/printed_lines_r1.txt
-bash scripts/lines.sh  data/SRR14784377/SRR14784377.lite.1_1.fastq  > results/SRR14784377/printed_lines_f2.txt
-bash scripts/lines.sh  data/SRR14784377/SRR14784377.lite.1_2.fastq  > results/SRR14784377/printed_lines_r2.txt
+bash scripts/lines.sh  data/SRR14784363/SRR14784363_1.fastq  > results/SRR14784363/printed_lines_f1.txt
+bash scripts/lines.sh  data/SRR14784363/SRR14784363_2.fastq  > results/SRR14784363/printed_lines_r1.txt
+bash scripts/lines.sh  data/SRR14784377/SRR14784377_1.fastq  > results/SRR14784377/printed_lines_f2.txt
+bash scripts/lines.sh  data/SRR14784377/SRR14784377_2.fastq  > results/SRR14784377/printed_lines_r2.txt
 ```
-Produced outputs were stored in separate .txt files under 'results/'. Let's look at the output for SRR14784377.lite.1_1.fastq:
+Produced outputs were stored in separate .txt files under 'results/'. Let's look at the output for SRR14784377_1.fastq:
 
 ```bash
-First read in data/SRR14784377/SRR14784377.lite.1_1.fastq:
-@SRR14784377.lite.1.1 1 length=250
-AGGATCCTACGGGACGCAGCAGTGAGGAATATTGGTCAATGGACGCAAGTCTGAACCAGCCAAGTAGCGTGAAGGACGACGGCCCTACGGGTTGTAAACTTCTTTTGTACGGGAATAAAGTGAGGCACGCACTGCCTTTTTGCATGTACCGTACGAATAAGCAACGGCTAATTCCGTGCCAGCGGCCGCGGTAATACGGACGATGCGAGCGTTATCCGGAGTTATTGGGTTTAAAGGGAGCGTAGGCGGG
-+SRR14784377.lite.1.1 1 length=250
-??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+First read in data/SRR14784363/SRR14784363_1.fastq:
+@SRR14784363.1 1/1
+CTACGTACCTACGGGATGCAGCAGTAGGGAATATTGCACAATGGAGGGAACTCTGATGCAGCCATGCCGCGTGTGTGAAGAAGGCCTTCGGGTTGTAAAGCACTTTAGTTTTCGAGAAAGGGTGCAATTCGAACAGGGTTGTATTCAGATGTTAGAAAAAGAATAAGTACCGGCAAACTCCGTGCCAGCAGCCGCGGTAATACGGAGGGTACGAGCGTTAATCGGAATGACTGGGCGTAAAGGGCACGTA
++
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF,FFFFFFFFFFFFFFFFFFFFFFFFFFFF:FFFFFFFFFFFFFFFFFFFFFFF:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:FFFFFFFFFFFFFFFFFFFFFFF,:FFFFFFFFFFFFFFFFFFFFFFFFF:FFFFFFFFFF:F
 
-Last read in data/SRR14784377/SRR14784377.lite.1_1.fastq:
-@SRR14784377.lite.1.71987 71987 length=250
-AGGATCCTATGGGACGCACCAGTGGGGAATATTGCACAATGGGCGCAAGCCTGATGCAGCAACGCCGCGTGAGCGATGAAGGTCTTCGGATTGTAAAGCTCTGTCCTTGAGGACGAAAACTGACGGTACTCTTGGAGGAAGCCCCGGCTAACTACGTGCCAGCAGCCGCGGTAATACGTAGGGGGCGAGCGTTATCCGGAATTATTGGGCGTAAAGAGTACGTAGGTGGTTTTGTAAGCGTAGGGTTAAA
-+SRR14784377.lite.1.71987 71987 length=250
-??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+Last read in data/SRR14784363/SRR14784363_1.fastq:
+@SRR14784363.74229 74229/1
+CTACGTACCTATGGGATGCAGCAGTGGGGGATATTGCGCAATGGGGGAAACCCTGACGCAGCAACGCCGCGTGGAGGATGACGGTTTTCGGATTGTAAACTCCTTTTATGGGGGACGAATCAAGACGGTACCCCATGAATAAGCTCCGGCTAACTACGTGCCAGCAGCCGCGGTAATACGTAGGGAGCAAGCGTTGTCCGGATTTACTGGGTGTAAAGGGTGCGTAGGCGGCTTGGTAAGTCAGATGTGA
++
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF,F,FFFFFFFFFFFFFFFF,FFFF:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF,FFFFFFF:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:FFFFFFFFFFFFFFFFF:FFFFFFFFFFFF:FFFFFFFF,FFFFF:FFF:FFFFF:FFF
 ```
-The question marks below each read tell us that the quality of sequencing is good. Questions marks indicate no additional comments of the reads, which means there were no problems detected with quality. 
+Let's talk about the quality scores first to have some understanding of the reads. Fs stand for high-quality base, ":" stand for good quality, and "," low quality scores. 
 
 GitHub repo update:
 
