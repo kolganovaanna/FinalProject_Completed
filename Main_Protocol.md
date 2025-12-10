@@ -136,8 +136,8 @@ FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF,F,FFFFFFFFFFFFFFFF,FFFF:FFFFFFFFFFFFFFFFFFFFFFFFF
 ```
 Let's talk about the quality scores first to have some understanding of the reads. Fs stand for high-quality base, ":" stand for relatively good quality, and "," low quality scores. Most of my reads are of high quality but there are some that are low-quality. These are the reads I am targeting in the project. 
 
-GitHub repo update:
 
+*Git commit*:
 ```bash
 git add scripts/*.sh Main_Protocol.md Notes.md
 git commit -m "Part B"
@@ -221,6 +221,13 @@ grep "with adapter:" slurm-cutadapt77.out
 
 We see that the percentages of reads that contained adapters is in the upper 90s, which can tell us that there's likely nothing wrong with the adapter sequences I provided or with Cutadapt syntax. 
 
+I moved the produced files into 'results/slurm' directory using this command:
+
+```bash
+cp *slurm-cutadapt*.out *slurm-cutadapt*.err results/slurm/
+```
+
+*Git commit*:
 ```bash
 git add scripts/*.sh Main_Protocol.md Notes.md
 git commit -m "Part C"
@@ -238,4 +245,6 @@ cp -rv /fs/ess/PAS2880/users/kolganovaanna/FinalProject/data/cutadapt_combined /
 
 **Conclusions**
 
-According to the analysis, our reads were mostly high-quality. 
+According to the analysis, good number of reads survived all of the manpulations that were done on them. I was able to generate a high-quality microbial community profile, which told me that Bacteroidota and Firmicutes are most abundant microbes in my samples. These taxonomic groups are actually very common in the rumen, which makes me more confident in the quality of my dada2 pipeline. 
+Cutadapt and DADA2 are useful tools for amalyzing 16S sequencing data.
+I didn't have time to develop this project any further but I am planning to practice alpha and beta diversity in R over the break. This practice is a great opportunity for me to prepare for my own sequencing data analysis in the near future. 
