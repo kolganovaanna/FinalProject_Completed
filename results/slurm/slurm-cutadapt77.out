@@ -1,0 +1,82 @@
+Input files: data/SRR14784377/SRR14784377_1.fastq data/SRR14784377/SRR14784377_2.fastq
+This is cutadapt 5.2 with Python 3.10.19
+Command line parameters: -a CCTAYGGGRBGCASCAG...ATTAGATACCCNNGTAGTCC -A GGACTACNNGGGTATCTAAT...CTGSTGCVYCCCRTAGG --trimmed-only --cores 8 -o results/SRR14784377/cutadapt/SRR14784377_1.fastq -p results/SRR14784377/cutadapt/SRR14784377_2.fastq data/SRR14784377/SRR14784377_1.fastq data/SRR14784377/SRR14784377_2.fastq
+Processing paired-end reads on 8 cores ...
+
+=== Summary ===
+
+Total read pairs processed:             71,987
+  Read 1 with adapter:                  71,904 (99.9%)
+  Read 2 with adapter:                  71,840 (99.8%)
+
+== Read fate breakdown ==
+Pairs discarded as untrimmed:              229 (0.3%)
+Pairs written (passing filters):        71,758 (99.7%)
+
+Total basepairs processed:    35,993,500 bp
+  Read 1:    17,996,750 bp
+  Read 2:    17,996,750 bp
+Total written (filtered):     32,504,134 bp (90.3%)
+  Read 1:    16,359,302 bp
+  Read 2:    16,144,832 bp
+
+=== First read: Adapter 1 ===
+
+Sequence: CCTAYGGGRBGCASCAG...ATTAGATACCCNNGTAGTCC; Type: linked; Length: 17+20; 5' trimmed: 71903 times; 3' trimmed: 434 times
+
+Minimum overlap: 3+3
+No. of allowed errors:
+1-9 bp: 0; 10-17 bp: 1
+
+No. of allowed errors:
+1-9 bp: 0; 10-18 bp: 1
+
+Overview of removed sequences at 5' end
+length	count	expect	max.err	error counts
+21	155	0.0	1	0 155
+22	71714	0.0	1	70091 1623
+23	33	0.0	1	9 24
+33	1	0.0	1	1
+
+
+
+Overview of removed sequences at 3' end
+length	count	expect	max.err	error counts
+3	414	1124.8	0	414
+4	13	281.2	0	13
+5	4	70.3	0	4
+13	1	0.0	1	0 1
+164	2	0.0	1	2
+
+
+=== Second read: Adapter 2 ===
+
+Sequence: GGACTACNNGGGTATCTAAT...CTGSTGCVYCCCRTAGG; Type: linked; Length: 20+17; 5' trimmed: 71840 times; 3' trimmed: 206 times
+
+Minimum overlap: 3+3
+No. of allowed errors:
+1-9 bp: 0; 10-18 bp: 1
+
+No. of allowed errors:
+1-9 bp: 0; 10-17 bp: 1
+
+Overview of removed sequences at 5' end
+length	count	expect	max.err	error counts
+24	476	0.0	1	0 476
+25	71214	0.0	1	69364 1850
+26	149	0.0	1	40 109
+27	1	0.0	1	1
+
+
+
+Overview of removed sequences at 3' end
+length	count	expect	max.err	error counts
+3	135	1124.8	0	135
+4	55	281.2	0	55
+5	10	70.3	0	10
+9	1	0.3	0	0 1
+10	1	0.1	1	1
+14	2	0.0	1	0 2
+161	2	0.0	1	2
+Done with Cutadapt trimming
+Mon Dec  8 02:34:45 PM EST 2025

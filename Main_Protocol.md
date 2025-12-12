@@ -264,7 +264,7 @@ I believe I completed both course surveys.
 
 *Git commit*:
 ```bash
-git add Main_Protocol.md Notes.md DADA2.html DADA2.qmd results
+git add Main_Protocol.md Notes.md DADA2.html DADA2.qmd -f results
 git commit -m "Final Commit"
 git remote add origin git@github.com:kolganovaanna/Final-Project-.git
 git branch -M main

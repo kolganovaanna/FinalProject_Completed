@@ -1,0 +1,6 @@
+File size:
+-rw-rw----+ 1 kolganovaanna PAS2880 38M Dec  8 13:32 data/SRR14784363/SRR14784363_2.fastq
+Total lines:
+296916 data/SRR14784363/SRR14784363_2.fastq
+Reads(no headers):
+222687
