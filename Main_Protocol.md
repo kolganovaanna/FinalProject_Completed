@@ -2,7 +2,7 @@
 
 - Title: 16S Data Processing with Cutadapt & DADA2 for Rumen Microbiome Analysis
 - Author: Anna kolganova
-- Date: 2025-11-30
+- Date: 2025-12-12
 - Environment: Pitzer cluster at OSC via VS Code
 - Working dir: `/fs/ess/PAS2880/users/kolganovaanna/FinalProject`
 
