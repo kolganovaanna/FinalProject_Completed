@@ -72,8 +72,7 @@ A Git repository was initialized after all of the initial dirs are made:
 git init
 git add Main_Protocol.md Notes.md
 git commit -m "Committing to main_protocol and notes to set up"
-echo "results/" > .gitignore
-echo "data/" >> .gitignore
+echo "data/" > .gitignore
 echo "ProgressReport/" >> .gitignore
 echo "ProjectProposal/" >> .gitignore
 git add .gitignore
@@ -81,6 +80,7 @@ git commit -m "Adding a Gitignore file"
 ```
 
 **Note**: files that should be ignored in this working directory are ProgressReport and ProjectProposal. They are kept in the dir to only serve as the background for the project. But they are added to .gitignore. 
+'Results/' will not be added to .gitignore because I want you to be able to see produced graphs and slurm batch job outputs. They contain key information. 
 
 5. General analysis of the reads
 
@@ -255,8 +255,6 @@ Before starting with R, I went into Cluster -> Pitzer Shell Access and used this
 cp -rv /fs/ess/PAS2880/users/kolganovaanna/FinalProject/data/cutadapt_combined /fs/ess/PAS2880/users/$USER/
 ```
 
-**Note**: I am going to take my results folder out of .gitignore because I wangt you to be able to see all the graphs and slurm outputs.
-
 **Conclusions**
 
 According to the analysis, a good number of reads successfully passed all processing steps. I was able to generate a high-quality microbial community profile, which told me that Bacteroidota and Firmicutes are most abundant microbes in my samples. These taxonomic groups are actually very common in the rumen, which makes me more confident in the quality of my dada2 pipeline. 
@@ -266,7 +264,7 @@ I believe I completed both course surveys.
 
 *Git commit*:
 ```bash
-git add Main_Protocol.md Notes.md DADA2.html DADA2.qmd -f results
+git add Main_Protocol.md Notes.md DADA2.html DADA2.qmd
 git commit -m "Final Commit"
 git remote add origin git@github.com:kolganovaanna/Final-Project-.git
 git branch -M main
