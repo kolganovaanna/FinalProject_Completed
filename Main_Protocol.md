@@ -149,7 +149,7 @@ Let's talk about the quality scores first to have some understanding of the read
 
 *Git commit*:
 ```bash
-git add scripts/*.sh Main_Protocol.md Notes.md
+git add scripts/*.sh results/* Main_Protocol.md Notes.md
 git commit -m "Part B"
 ```
 
